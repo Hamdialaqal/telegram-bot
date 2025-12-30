@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+venv/
+.env
+bot_stats.json
+bot.log
+*.log
+.DS_Store
