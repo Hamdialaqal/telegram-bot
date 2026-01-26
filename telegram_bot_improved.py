@@ -413,27 +413,15 @@ async def auto_moderation(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             logger.info(f"🔗 تم حظر {username} ({user_id}) لنشر روابط")
             return
 
-        # التحقق من وجود أرقام هاتف
-        if contains_phone(text):
-            try:
-                await update.message.delete()
-                update_stats(chat_id, user_id, username, "delete", "أرقام هاتف")
-            except TelegramError as e:
-                logger.warning(f"⚠️ لم يتمكن من حذف الرسالة: {e}")
-
-            try:
-                await context.bot.ban_chat_member(chat_id, user_id)
-                update_stats(chat_id, user_id, username, "ban", "أرقام هاتف")
-            except TelegramError as e:
-                logger.warning(f"⚠️ لم يتمكن من حظر المستخدم {user_id}: {e}")
-
-            warning_msg = (
-                f"⛔ تم حظر المستخدم <b>{username}</b> لمحاولة نشر أرقام هاتف\n"
-                f"<i>مشاركة أرقام الهاتف غير مسموحة</i>"
-            )
-            await send_warning_message(context, chat_id, warning_msg)
-            logger.info(f"📱 تم حظر {username} ({user_id}) لنشر أرقام هاتف")
-            return
+# التحقق من وجود أرقام هاتف (حذف فقط بدون عقوبة)
+if contains_phone(text):
+    try:
+        await update.message.delete()
+        update_stats(chat_id, user_id, username, "delete", "أرقام هاتف")
+        logger.info(f"📱 تم حذف رسالة من {username} ({user_id}) لاحتوائها على رقم هاتف")
+    except TelegramError as e:
+        logger.warning(f"⚠️ لم يتمكن من حذف الرسالة: {e}")
+    return
 
         # التحقق من وجود كلمات مسيئة
         has_bad_word, detected_word = contains_bad_words(text)
